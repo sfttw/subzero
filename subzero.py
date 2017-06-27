@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
+'''subdomain bruteforcer. uses dns.resolver to check for results. 
 
+i kept getting too many false positives using other scripts so i made my own
+
+--elv'''
 import dns.resolver #import the module
 import argparse
 global wordlist
+global wordlist_size
 global domain
 global log
+global logfile
+global count
 import threading
 
 
 log = []
-logfile = 'log.txt'
-logfile = open(logfile,'a')
 
 def check(target):
     myResolver = dns.resolver.Resolver() #create a new instance named 'myResolver'
@@ -34,10 +39,13 @@ def check(target):
         pass    
 
 def main():
+    global count
     while len(wordlist) > 0:
         target = wordlist.pop() + '.' + domain
         check(target)
-        print('\r {}'.format(target), end='')
+        count += 1
+        print('\r {} / {}'.format(count, wordlist_size), end='')
+        #print('\r {}'.format(target), end='')
 
 
     
@@ -47,14 +55,19 @@ if __name__ == "__main__":
     parser.add_argument('-d','--domain', help='Domain', required=True)
     parser.add_argument('-w','--wordlist', help='Wordlist', default='names.txt', required=False)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true')
-    parser.add_argument('-o','--output', help='Output file', required=False)
+    parser.add_argument('-o','--output', help='Output file', required=True, default='log.txt')
     args = vars(parser.parse_args())
 
     if args['domain']:
         wordlist = open(args['wordlist'], 'r').readlines()
         wordlist = [i.strip() for i in wordlist]
         wordlist.reverse()
+        wordlist_size = len(wordlist)
         domain = args['domain']
+        count = 0
+        logfile = args['output']
+        logfile = open(logfile,'a')
+
         threads = []
         for i in range(1000):
             try:
