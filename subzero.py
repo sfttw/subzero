@@ -6,6 +6,7 @@ i kept getting too many false positives using other scripts so i made my own
 --elv'''
 import dns.resolver #import the module
 import argparse
+import time
 global wordlist
 global wordlist_size
 global domain
@@ -23,8 +24,9 @@ def check(target):
         myAnswers = myResolver.query(target, "A") #Lookup the 'A' record(s) for google.com
         for rdata in myAnswers: #for each response
             answer = target + ' ' + rdata.to_text() + '\n'
-            #print(answer)
-            logfile.write(answer)
+        #    print('[+] '+answer)
+        #    logfile.write(answer)
+            log.append(answer)
             #print(rdata) #print the data
     except:
         pass
@@ -32,8 +34,9 @@ def check(target):
         myAnswers = myResolver.query(target, "CNAME") #Lookup the 'A' record(s) for google.com
         for rdata in myAnswers: #for each response
             answer = target + ' ' + rdata.to_text() + '\n'
-            #print(answer)
-            logfile.write(answer)
+         #   print('[+] '+answer)
+         #   logfile.write(answer)
+            log.append(answer)
             #print(rdata) #print the data
     except: 
         pass    
@@ -53,11 +56,12 @@ def main():
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser(description='Subzero - subdomain bruteforcer')
     parser.add_argument('-d','--domain', help='Domain', required=True)
-    parser.add_argument('-w','--wordlist', help='Wordlist', default='names.txt', required=False)
+    parser.add_argument('-w','--wordlist', help='Wordlist', default='subdomains-10000.txt', required=False)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true')
     parser.add_argument('-o','--output', help='Output file', required=True, default='log.txt')
+    parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=50)
     args = vars(parser.parse_args())
-
+    threads = []
     if args['domain']:
         wordlist = open(args['wordlist'], 'r').readlines()
         wordlist = [i.strip() for i in wordlist]
@@ -66,12 +70,13 @@ if __name__ == "__main__":
         domain = args['domain']
         count = 0
         logfile = args['output']
+        threadcount = int(args['threadcount'])
         logfile = open(logfile,'a')
 
-        threads = []
-        for i in range(1000):
+        
+        for i in range(threadcount):
             try:
-                t = threading.Thread(target=main)
+                t = threading.Thread(target=main, daemon=True)
                 threads.append(t)
                 t.start()
             except:
@@ -79,4 +84,10 @@ if __name__ == "__main__":
     else:
         print("Usage: subzero.py -d [domain]")
         
-    
+        
+    while True:
+        if count < wordlist_size: pass
+        else:
+            for i in log: logfile.write(i)
+            print('\n')
+            break
