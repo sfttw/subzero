@@ -9,9 +9,7 @@ pip install dns
 
 # Usage
 
-# ./subzero.py -d google.com -o google.com.txt
-
-## example output
+./subzero.py -d google.com -o google.com.txt
 
 $ time ./subzero.py -d twitter.com -w subdomains-10000.txt -o twitter.com
 
