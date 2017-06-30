@@ -6,15 +6,15 @@ i kept getting too many false positives using other scripts so i made my own
 --elv'''
 import dns.resolver #import the module
 import argparse
-import time
+
 global wordlist
 global wordlist_size
 global domain
 global log
 global logfile
 global count
+global verbose
 import threading
-
 
 log = []
 
@@ -23,21 +23,17 @@ def check(target):
     try:
         myAnswers = myResolver.query(target, "A") #Lookup the 'A' record(s) for google.com
         for rdata in myAnswers: #for each response
-            answer = target + ' ' + rdata.to_text() + '\n'
-        #    print('[+] '+answer)
-        #    logfile.write(answer)
+            answer = target + ' ' + rdata.to_text()
+            if verbose: print('\r[+] '+answer)
             log.append(answer)
-            #print(rdata) #print the data
     except:
         pass
     try:
         myAnswers = myResolver.query(target, "CNAME") #Lookup the 'A' record(s) for google.com
         for rdata in myAnswers: #for each response
-            answer = target + ' ' + rdata.to_text() + '\n'
-         #   print('[+] '+answer)
-         #   logfile.write(answer)
+            answer = target + ' ' + rdata.to_text()
+            if verbose: print('\r[+] '+answer)
             log.append(answer)
-            #print(rdata) #print the data
     except: 
         pass    
 
@@ -47,7 +43,7 @@ def main():
         target = wordlist.pop() + '.' + domain
         check(target)
         count += 1
-        print('\r {} / {}'.format(count, wordlist_size), end='')
+        print('\rComplete: {} / {}'.format(count, wordlist_size), end='')
         #print('\r {}'.format(target), end='')
 
 
@@ -58,11 +54,14 @@ if __name__ == "__main__":
     parser.add_argument('-d','--domain', help='Domain', required=True)
     parser.add_argument('-w','--wordlist', help='Wordlist', default='subdomains-10000.txt', required=False)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true')
-    parser.add_argument('-o','--output', help='Output file', required=True, default='log.txt')
-    parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=50)
+    parser.add_argument('-o','--output', help='Output file', required=False, default='log.txt')
+    parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=50)    
+    
     args = vars(parser.parse_args())
     threads = []
+    
     if args['domain']:
+        verbose = args['verbose']
         wordlist = open(args['wordlist'], 'r').readlines()
         wordlist = [i.strip() for i in wordlist]
         wordlist.reverse()
@@ -88,6 +87,7 @@ if __name__ == "__main__":
     while True:
         if count < wordlist_size: pass
         else:
-            for i in log: logfile.write(i)
-            print('\n')
+            if args['output']:
+                for i in log: logfile.write(i)
+            print('\r\n')
             break
