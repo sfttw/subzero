@@ -29,11 +29,26 @@ The **subdomain-uk-500.txt** and **subdomain-uk-1000.txt** lists are created usi
 
 The final (and default) wordlist (**subdomains.txt**) is based on the top 10000 subdomains by popularity and the top 10000 UK subdomains, but has had a number of manual additions made based on domains identified during testing.
 
->This list is sorted alphabetically and currently contains approximately **10443** entries.
+This list is sorted alphabetically and currently contains approximately **10443** entries.
 
 # Requirements: 
 
 pip install dns
+
+
+
+# certscan.py
+certscan is a fork of subd. It's a subdomain discovery tool that utilizes Certificate Search, Threat Crowd, and VirusTotal to fetch subdomains for a target within a few seconds. It's meant to be used to get quick results and not a complete replacement for subdomain enumerating.
+
+## Requirements
+- VirusTotal API Key (`vt_api_key = 'INSERT API KEY HERE'`).
+- BeautifulSoup4 `pip3 install beautifulsoup4`
+- aiohttp `pip3 install aiohttp`
+
+## Usage
+	python3 certscan.py domain.com
+	
+	
 
 # Acknowledgements 
 

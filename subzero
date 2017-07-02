@@ -5,7 +5,7 @@
 import dns.resolver 
 import argparse
 import threading
-
+import certscan
 __author__ = 'e7v'
 __version__ = '2.4 Clint Eastwood'
 __url__='https://github.com/e7v/subzero'
@@ -64,7 +64,8 @@ if __name__ == "__main__":
                                     epilog=__epilog__)
     #parser.add_argument('-d','--domain', help='Domain', required=True)
     parser.add_argument('domain', help='target to scan, like domain.com')
-    parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/subdomains.txt', required=False)
+    parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/test.txt', required=False)
+    parser.add_argument('-c','--certscan', help='Scan ssl certs', required=False, action='store_true', default=True)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true')
     parser.add_argument('-o','--output', help='Output file', required=False, default='log.txt')
     parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=100)    
@@ -113,8 +114,16 @@ if __name__ == "__main__":
         if count < wordlist_size: pass
         else:
             if args['output']:
-                logfile = open(args['output'],'w')
+                logfile = open(args['output'],'a')
                 for i in log: 
                     logfile.write(i+'\n')
             print('\r\n')
             break
+                    
+        print('\nScanning certs...')
+        
+        if args['output']:
+            logfile = open(args['output'],'a')
+            results = certscan.main(args['domain'],args['verbose']) 
+            for i in results:
+                logfile.write('\n'+i)
