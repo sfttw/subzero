@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
-
+'''not yet ready for prime time'''
 import argparse
 import socket
 import threading
@@ -26,7 +26,7 @@ def check(host, port):
 
 
 
-def main(target='77night.club'):
+def main(target='example.com'):
     try:target=args['domain']
     except:pass
     global count
