@@ -7,9 +7,9 @@ import argparse
 import threading
 import certscan
 __author__ = 'e7v'
-__version__ = '2.4A Clint Eastwood'
+__version__ = '0.2A Clint Eastwood'
 __url__='https://github.com/e7v/subzero'
-__description__='''\
+__description__='''
 ___________________________________________
 Subzero, a subdomain bruteforcer.
 Version: '''+__version__+'''
@@ -65,7 +65,6 @@ if __name__ == "__main__":
     #parser.add_argument('-d','--domain', help='Domain', required=True)
     parser.add_argument('domain', help='target to scan, like domain.com')
     parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/test.txt', required=False)
-    parser.add_argument('-c','--certscan', help='Scan ssl certs', required=False, action='store_true', default=True)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true', default=True)
     parser.add_argument('-o','--output', help='Output file', required=False, default='log.txt')
     parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=100)    
