@@ -97,11 +97,7 @@ if __name__ == "__main__":
     while True:
         if count < wordlist_size: 
             pass
-        else:
-            if args['output']:
-                logfile = open(args['output'],'a')
-                for i in log: 
-                    logfile.write(i+'\n')
+        else:                
             print('\r\n')
             print('\n\nScanning certs...')
             
@@ -116,7 +112,13 @@ if __name__ == "__main__":
                 if args['verbose']:
                     print(i)
             if args['output']:
-                logfile = open(args['output'],'a')
-                for i in certs2:
+                logfile = open(args['output'],'w')
+                #remove duplicates
+                deDuped = []
+                log = certs2 + log
+                for record in log:
+                    if record not in deDuped:
+                        deDuped.append(record)
+                for i in deDuped: 
                     logfile.write(i+'\n')
             break
