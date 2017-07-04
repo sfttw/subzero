@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 # -*- encoding: utf-8 -*-
 ''' subdomain discovery using Certificate Search, Threat Crowd, and VirusTotal to fetch subdomains for a target within a few seconds. '''
-import bs4, io, json, pycurl, queue, sys, threading
+import bs4 
+import io
+import json
+import pycurl
+import queue
+import sys
+import threading
 import argparse
+import dig
 __author__ = 'e7v'
 __version__ = '0.1'
 __url__='https://github.com/e7v/subzero/certscan'

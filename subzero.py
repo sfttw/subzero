@@ -6,8 +6,9 @@ import dns.resolver
 import argparse
 import threading
 import certscan
+import dig
 __author__ = 'e7v'
-__version__ = '0.2A Clint Eastwood'
+__version__ = '0.2B Clint Eastwood'
 __url__='https://github.com/e7v/subzero'
 __description__='''
 ___________________________________________
@@ -30,30 +31,14 @@ count = 0
 wordlist = []
 wordlist_size = 0 
 
-def check(target):
-    myResolver = dns.resolver.Resolver() 
-    try:
-        myAnswers = myResolver.query(target, "A") 
-        for rdata in myAnswers: 
-            answer = target + ' ' + rdata.to_text()
-            if args['verbose']: print('\r'+answer+'\n',end='')
-            log.append(answer)
-    except:
-        pass
-    try:
-        myAnswers = myResolver.query(target, "CNAME") 
-        for rdata in myAnswers: 
-            answer = target + ' ' + rdata.to_text()
-            if args['verbose']: print('\r'+answer+'\n',end='')
-            log.append(answer)
-    except: 
-        pass    
+ 
 
 def main():
     global count
     while len(wordlist) > 0:
         target = wordlist.pop() + '.' + args['domain']
-        check(target)
+        for success in dig.check(target, True):
+            log.append(success)
         count += 1
         print('\rComplete: {} / {}'.format(count, wordlist_size), end='')
     
@@ -64,9 +49,9 @@ if __name__ == "__main__":
                                     epilog=__epilog__)
     #parser.add_argument('-d','--domain', help='Domain', required=True)
     parser.add_argument('domain', help='target to scan, like domain.com')
-    parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/test.txt', required=False)
+    parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/subdomains.txt', required=False)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true', default=True)
-    parser.add_argument('-o','--output', help='Output file', required=False, default='log.txt')
+    parser.add_argument('-o','--output', help='Output file', required=False, default=False)
     parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=100)    
     
     args = vars(parser.parse_args())
@@ -110,21 +95,28 @@ if __name__ == "__main__":
         
         
     while True:
-        if count < wordlist_size: pass
+        if count < wordlist_size: 
+            pass
         else:
             if args['output']:
                 logfile = open(args['output'],'a')
                 for i in log: 
                     logfile.write(i+'\n')
             print('\r\n')
-            
-                    
             print('\n\nScanning certs...')
             
+            certs = []
+            certs2 = []
+            for i in certscan.main(args['domain'],False):
+                certs.append(i)
+            for i in certs:
+                for x in dig.check(i,True,False):
+                    certs2.append(x)
+            for i in certs2:
+                if args['verbose']:
+                    print(i)
             if args['output']:
-                logfile = open(args['output'],'a')  
-                for i in certscan.main(args['domain'],args['verbose']) :
+                logfile = open(args['output'],'a')
+                for i in certs2:
                     logfile.write(i+'\n')
-            else:
-                certscan.main(args['domain'],args['verbose'])
             break
