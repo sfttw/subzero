@@ -6,7 +6,7 @@ Subzero is a very-fast python wordlist-based DNS subdomain scanner.
 Usage
 -----
 
-dnscan.py -d \<domain\> -o \<output\> [OPTIONS]
+subzero.py -d \<domain\> -o \<output\> [OPTIONS]
 
 #### Mandatory Arguments
 	-d  --domain                              Target domain
