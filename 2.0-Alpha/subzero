@@ -30,15 +30,17 @@ log = []
 count = 0
 wordlist = []
 wordlist_size = 0 
-
+found = 0
  
 
 def main():
     global count
+    global found
     while len(wordlist) > 0:
         target = wordlist.pop() + '.' + args['domain']
         for success in dig.check(target, True):
             log.append(success)
+            found += 1
         count += 1
         print('\rComplete: {} / {}'.format(count, wordlist_size), end='')
     
@@ -52,7 +54,7 @@ if __name__ == "__main__":
     parser.add_argument('-w','--wordlist', help='Wordlist', default='wordlists/subdomains.txt', required=False)
     parser.add_argument('-v','--verbose', help='Verbose', required=False, action='store_true', default=True)
     parser.add_argument('-o','--output', help='Output file', action='store_true', default=True)
-    parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=200)    
+    parser.add_argument('-t','--threadcount', help='Number of Threads', required=False, default=50)    
     
     args = vars(parser.parse_args())
     threads = []
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     
             for i in range(threadcount):
                 try:
-                    t = threading.Thread(target=main, daemon=True)
+                    t = threading.Thread(target=main, daemon=False)
                     threads.append(t)
                     t.start()
                 except:
@@ -106,6 +108,7 @@ if __name__ == "__main__":
                 pass
             else:                
                 print('\r\n')
+                print("Bruteforced Subdomains: {}".format(str(found)))
                 print('\n\nScanning certs...')
                 
                 certs = []
